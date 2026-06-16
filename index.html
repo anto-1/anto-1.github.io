@@ -59,18 +59,20 @@
         </ul>
       </nav>
 
-      <article class="post-entry writeup-panel" id="anto-1" tabindex="-1" data-search="anto-1 bug bounty write-up vulnerability summary impact reproduction remediation">
-        <header class="entry-header">
-          <p class="eyebrow">Bug bounty write-up</p>
-          <h2>anto-1</h2>
-        </header>
-        <div class="entry-content">
-          <p>This write-up is ready for the vulnerability summary, impact, reproduction steps, and remediation notes.</p>
-        </div>
-        <footer class="entry-footer">
-          <span>Draft</span><span>Single-page</span><span>anto-1</span>
-        </footer>
-      </article>
+      <div class="post-list" id="post-list">
+        <article class="post-entry writeup-panel" id="anto-1" tabindex="-1" data-search="anto-1 bug bounty write-up vulnerability summary impact reproduction remediation">
+          <header class="entry-header">
+            <p class="eyebrow">Bug bounty write-up</p>
+            <h2>anto-1</h2>
+          </header>
+          <div class="entry-content">
+            <p>This write-up is ready for the vulnerability summary, impact, reproduction steps, and remediation notes.</p>
+          </div>
+          <footer class="entry-footer">
+            <span>Draft</span><span>Single-page</span><span>anto-1</span>
+          </footer>
+        </article>
+      </div>
 
       <section class="scaffold-grid" aria-label="Site sections">
         <section class="scaffold-panel" id="archive">
@@ -80,8 +82,9 @@
 
         <section class="scaffold-panel" id="search">
           <p class="eyebrow">Search</p>
-          <label class="search-label" for="post-search">Filter write-ups</label>
-          <input id="post-search" class="search-field" type="search" placeholder="Search anto-1">
+          <label class="search-label" for="post-search">Search all post text</label>
+          <input id="post-search" class="search-field" type="search" placeholder="Try impact, remediation, anto">
+          <output class="result-count" id="search-count" for="post-search" aria-live="polite"></output>
           <p class="empty-state" id="search-empty" hidden>No matching write-ups.</p>
         </section>
 
@@ -99,22 +102,83 @@
 
   <script>
     const searchInput = document.querySelector("#post-search");
-    const entries = [...document.querySelectorAll(".post-entry[data-search]")];
+    const entries = [...document.querySelectorAll(".post-entry")];
+    const resultCount = document.querySelector("#search-count");
     const emptyState = document.querySelector("#search-empty");
 
-    searchInput?.addEventListener("input", () => {
-      const query = searchInput.value.trim().toLowerCase();
-      let matches = 0;
+    const normalize = (value) => value
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
 
-      entries.forEach((entry) => {
-        const text = entry.dataset.search.toLowerCase();
-        const visible = !query || text.includes(query);
+    const postList = document.querySelector("#post-list");
+
+    const posts = entries.map((entry, index) => {
+      const title = entry.querySelector("h2")?.textContent ?? "";
+      const text = normalize(`${title} ${entry.textContent} ${entry.dataset.search ?? ""}`);
+
+      return { entry, index, text, title };
+    });
+
+    const scoreToken = (token, text) => {
+      if (!token) return 0;
+
+      const exactIndex = text.indexOf(token);
+      if (exactIndex >= 0) {
+        const wordBoundaryBonus = exactIndex === 0 || text[exactIndex - 1] === " " ? 20 : 0;
+        return 100 + wordBoundaryBonus - Math.min(exactIndex, 40);
+      }
+
+      let cursor = 0;
+      let first = -1;
+      let previous = -1;
+      let gapPenalty = 0;
+
+      for (const char of token) {
+        const found = text.indexOf(char, cursor);
+
+        if (found === -1) return -1;
+        if (first === -1) first = found;
+        if (previous !== -1) gapPenalty += found - previous - 1;
+
+        previous = found;
+        cursor = found + 1;
+      }
+
+      return 60 - Math.min(first, 30) - Math.min(gapPenalty, 40);
+    };
+
+    const updateSearch = () => {
+      const tokens = normalize(searchInput?.value ?? "").split(" ").filter(Boolean);
+      const ranked = posts.map((post) => {
+        const score = tokens.reduce((total, token) => {
+          if (total < 0) return -1;
+
+          const tokenScore = scoreToken(token, post.text);
+          return tokenScore < 0 ? -1 : total + tokenScore;
+        }, 0);
+
+        return { ...post, score };
+      });
+
+      let matches = 0;
+      ranked
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .forEach(({ entry, score }) => {
+        const visible = tokens.length === 0 || score >= 0;
         entry.hidden = !visible;
+        postList?.append(entry);
         matches += visible ? 1 : 0;
       });
 
       emptyState.hidden = matches > 0;
-    });
+      resultCount.textContent = `${matches} ${matches === 1 ? "write-up" : "write-ups"} found`;
+    };
+
+    searchInput?.addEventListener("input", updateSearch);
+    updateSearch();
   </script>
 </body>
 </html>

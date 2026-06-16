@@ -208,6 +208,14 @@ h1 {
   transform: translateY(-1px);
 }
 
+[hidden] {
+  display: none !important;
+}
+
+.post-list {
+  display: grid;
+}
+
 .writeup-panel {
   margin-bottom: 1rem;
   border: 1px solid var(--line);
@@ -292,6 +300,13 @@ h1 {
 .search-field:focus {
   border-color: var(--accent);
   outline: none;
+}
+
+.result-count {
+  display: block;
+  margin-top: 0.65rem;
+  color: rgba(241, 245, 244, 0.68);
+  font-size: 0.86rem;
 }
 
 .empty-state {
