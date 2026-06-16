@@ -41,10 +41,19 @@ a {
   padding: 2rem;
 }
 
+body.landing-page .page {
+  place-items: start;
+  padding: clamp(1.5rem, 5vw, 4rem);
+}
+
 .list-wrap {
   width: min(100%, 34rem);
   text-align: center;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.72);
+}
+
+body.landing-page .list-wrap {
+  text-align: left;
 }
 
 .eyebrow {
