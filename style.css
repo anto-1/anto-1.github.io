@@ -23,6 +23,13 @@ body {
   color: var(--text);
 }
 
+body.landing-page {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.44), rgba(0, 0, 0, 0.76)),
+    url("assets/landing-bg.jpg") center center / cover no-repeat fixed,
+    var(--bg);
+}
+
 a {
   color: inherit;
 }
