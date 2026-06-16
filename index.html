@@ -6,22 +6,115 @@
   <title>Bug Bounty Write-Ups</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="landing-page">
-  <main class="page">
-    <section class="list-wrap" aria-labelledby="page-title">
+<body class="landing-page" id="top">
+  <header class="header">
+    <nav class="header-nav" aria-label="Primary navigation">
+      <a class="logo" href="#top" aria-label="anto-1 home">anto-1</a>
+      <ul class="menu">
+        <li><a href="#blog">Blog</a></li>
+        <li><a href="#archive">Archive</a></li>
+        <li><a href="#search">Search</a></li>
+        <li><a href="#tags">Tags</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="page main">
+    <section class="list-wrap home-info" id="blog" aria-labelledby="page-title">
       <p class="eyebrow">Security research</p>
       <h1 id="page-title">Bug Bounty Write-Ups</h1>
+      <p class="intro">Notes, reproductions, and exploit write-ups from anto-1.</p>
+
+      <div class="social-icons" aria-label="Quick links">
+        <a href="https://github.com/anto-1" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.44 5.44 0 0 0 3.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+          </svg>
+        </a>
+        <a href="#archive" title="Archive" aria-label="Archive">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 6.5h18"></path>
+            <path d="M5 6.5V20h14V6.5"></path>
+            <path d="M8 3h8l1 3.5H7L8 3z"></path>
+            <path d="M9 11h6"></path>
+          </svg>
+        </a>
+        <a href="#search" title="Search" aria-label="Search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m20 20-4.4-4.4"></path>
+          </svg>
+        </a>
+        <a href="#tags" title="Tags" aria-label="Tags">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 13 13 20 4 11V4h7l9 9z"></path>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          </svg>
+        </a>
+      </div>
+
       <nav aria-label="Write-up list">
         <ul class="writeup-list">
           <li><a href="#anto-1">anto-1</a></li>
         </ul>
       </nav>
-      <section class="writeup-panel" id="anto-1" tabindex="-1">
-        <p class="eyebrow">Bug bounty write-up</p>
-        <h2>anto-1</h2>
-        <p>This write-up is ready for the vulnerability summary, impact, reproduction steps, and remediation notes.</p>
+
+      <article class="post-entry writeup-panel" id="anto-1" tabindex="-1" data-search="anto-1 bug bounty write-up vulnerability summary impact reproduction remediation">
+        <header class="entry-header">
+          <p class="eyebrow">Bug bounty write-up</p>
+          <h2>anto-1</h2>
+        </header>
+        <div class="entry-content">
+          <p>This write-up is ready for the vulnerability summary, impact, reproduction steps, and remediation notes.</p>
+        </div>
+        <footer class="entry-footer">
+          <span>Draft</span><span>Single-page</span><span>anto-1</span>
+        </footer>
+      </article>
+
+      <section class="scaffold-grid" aria-label="Site sections">
+        <section class="scaffold-panel" id="archive">
+          <p class="eyebrow">Archive</p>
+          <a href="#anto-1">anto-1</a>
+        </section>
+
+        <section class="scaffold-panel" id="search">
+          <p class="eyebrow">Search</p>
+          <label class="search-label" for="post-search">Filter write-ups</label>
+          <input id="post-search" class="search-field" type="search" placeholder="Search anto-1">
+          <p class="empty-state" id="search-empty" hidden>No matching write-ups.</p>
+        </section>
+
+        <section class="scaffold-panel" id="tags">
+          <p class="eyebrow">Tags</p>
+          <div class="tag-list">
+            <a href="#anto-1">bug-bounty</a>
+            <a href="#anto-1">write-up</a>
+            <a href="#anto-1">research</a>
+          </div>
+        </section>
       </section>
     </section>
   </main>
+
+  <script>
+    const searchInput = document.querySelector("#post-search");
+    const entries = [...document.querySelectorAll(".post-entry[data-search]")];
+    const emptyState = document.querySelector("#search-empty");
+
+    searchInput?.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let matches = 0;
+
+      entries.forEach((entry) => {
+        const text = entry.dataset.search.toLowerCase();
+        const visible = !query || text.includes(query);
+        entry.hidden = !visible;
+        matches += visible ? 1 : 0;
+      });
+
+      emptyState.hidden = matches > 0;
+    });
+  </script>
 </body>
 </html>
